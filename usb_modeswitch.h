@@ -50,7 +50,7 @@ int write_bulk(int endpoint, unsigned char *message, int length);
 int read_bulk(int endpoint, unsigned char *buffer, int length);
 void release_usb_device(int dummy);
 struct libusb_device* search_devices( int *numFound, int vendor, char* productList,
-		int targetClass, int configuration, int mode);
+		int targetClass, int mode);
 int find_first_bulk_endpoint(int direction);
 int get_current_config_value();
 int get_interface_class();
@@ -93,7 +93,7 @@ extern char *TempPP;
 #define ParseParamString(ParamFileName, Str) \
 	if ((TempPP=ReadParseParam((ParamFileName), #Str))!=NULL) \
 		strcpy(Str, TempPP); else Str[0]='\0'
-		
+
 #define ParseParamInt(ParamFileName, Int) \
 	if ((TempPP=ReadParseParam((ParamFileName), #Int))!=NULL) \
 		Int=atoi(TempPP)

@@ -526,7 +526,7 @@ int main(int argc, char **argv)
 	/* Count existing target devices, remember for success check */
 	if (searchMode != SEARCH_BUSDEV && (TargetVendor || TargetClass)) {
 		SHOW_PROGRESS(output,"Look for target devices ...\n");
-		search_devices(&targetDeviceCount, TargetVendor, TargetProductList, TargetClass, 0,
+		search_devices(&targetDeviceCount, TargetVendor, TargetProductList, TargetClass,
 				SEARCH_TARGET);
 
 		if (targetDeviceCount) {
@@ -540,7 +540,7 @@ int main(int argc, char **argv)
 
 	sprintf(DefaultProductList,"%04x",DefaultProduct);
 	dev = search_devices(&numDefaults, DefaultVendor, DefaultProductList, TargetClass,
-		Configuration, searchMode);
+		searchMode);
 
 	if (numDefaults) {
 		SHOW_PROGRESS(output," Found devices in default mode (%d)\n", numDefaults);
@@ -1422,7 +1422,7 @@ int switchSonyMode ()
 	while ( dev == 0 && i < 30 ) {
 		if ( i > 5 ) {
 			dev = search_devices(&found, DefaultVendor, DefaultProductList, TargetClass,
-					0, SEARCH_TARGET);
+					SEARCH_TARGET);
 		}
 		if ( dev != 0 )
 			break;
@@ -1582,10 +1582,10 @@ int checkSuccess()
 		 * description is read for syslog message
 		 */
 		// Wait counter passed on from previous loop
-		for (i=i; i < CheckSuccess; i++) {
+		for (; i < CheckSuccess; i++) {
 			SHOW_PROGRESS(output," Search for target devices ...\n");
 			dev = search_devices(&newTargetCount, TargetVendor, TargetProductList,
-					TargetClass, 0, SEARCH_TARGET);
+					TargetClass, SEARCH_TARGET);
 
 			if (dev && (newTargetCount > targetDeviceCount)) {
 				if (verbose) {
@@ -1620,7 +1620,7 @@ int checkSuccess()
 		}
 
 	switch (success) {
-		case 2: 
+		case 2:
 			if (sysmode)
 				syslog(LOG_NOTICE, "switched to %04x:%04x on %03d/%03d", TargetVendor,
 						TargetProduct, busnum, devnum);
@@ -1683,7 +1683,7 @@ void release_usb_device(int __attribute__((unused)) dummy)
  * parameters and returns the last one of them
 */
 struct libusb_device* search_devices( int *numFound, int vendor, char* productList,
-		int targetClass, int configuration, int mode)
+		int targetClass, int mode)
 {
 	char *listcopy=NULL, *token;
 	unsigned char buffer[2];
@@ -1893,6 +1893,7 @@ char* ReadParseParam(const char* FileName, char *VariableName)
 			if (file==NULL) {
 				fprintf(stderr, "Error: Could not find file %s. Abort\n\n", FileName);
 				abortExit();
+				token = NULL;
 			} else {
 				token = fgets(Str, LINE_DIM-1, file);
 			}
